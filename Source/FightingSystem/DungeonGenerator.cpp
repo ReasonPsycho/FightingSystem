@@ -115,12 +115,15 @@ void ADungeonGenerator::GenerateDungeon()
             {
                 int32 RoomIndex = FMath::RandRange(0, RoomPrefabs.Num() - 1);
                 FVector Location(i * RoomOffset.X, j * RoomOffset.Y, 0);
-                AActor* NewRoom = World->SpawnActor<AActor>(RoomPrefabs[RoomIndex], Location, FRotator::ZeroRotator);
+                //AActor* NewRoom = World->SpawnActor<AActor>(RoomPrefabs[RoomIndex], Location, FRotator::ZeroRotator);
+                ARoomActor* NewRoom = World->SpawnActor<ARoomActor>(RoomPrefabs[RoomIndex], Location, FRotator::ZeroRotator);
+
                 if (NewRoom)
                 {
                     NewRoom->SetActorLabel(FString::Printf(TEXT("%d-%d"), i, j));
-                    // Tutaj mo¿esz dodaæ funkcjê UpdateRoom(Board[Index].Status) jeœli Room ma w³asny komponent
+                    NewRoom->UpdateDoors(Board[Index].Status);
                 }
+
             }
         }
     }

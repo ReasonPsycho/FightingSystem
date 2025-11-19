@@ -1,8 +1,8 @@
-// DungeonGenerator.h
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "RoomActor.h"
 #include "DungeonGenerator.generated.h"
 
 UCLASS()
@@ -22,17 +22,21 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FVector RoomOffset = FVector(400, 400, 0);
 
+    // Ka¿dy prefab MUSI byæ pochodn¹ ARoomActor
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<TSubclassOf<AActor>> RoomPrefabs;
+    TArray<TSubclassOf<ARoomActor>> RoomPrefabs;
 
 protected:
     virtual void BeginPlay() override;
 
 private:
+
     struct FCell
     {
         bool bVisited = false;
-        bool Status[4] = { false, false, false, false }; // Up, Down, Right, Left
+
+        // Up, Down, Right, Left
+        TArray<bool> Status = { false, false, false, false };
     };
 
     TArray<FCell> Board;

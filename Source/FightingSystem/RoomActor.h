@@ -12,15 +12,42 @@ class FIGHTINGSYSTEM_API ARoomActor : public AActor
 public:
     ARoomActor();
 
-    // Drzwi w kolejnoœci: 0-Up, 1-Down, 2-Right, 3-Left
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<AActor*> Doors;
+    // Komponenty drzwi
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
+    UStaticMeshComponent* DoorUp;
 
-    // Œciany w tej samej kolejnoœci
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<AActor*> Walls;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
+    UStaticMeshComponent* DoorDown;
 
-    // Ustawia drzwi w zale¿noœci od po³¹czeñ
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
+    UStaticMeshComponent* DoorRight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
+    UStaticMeshComponent* DoorLeft;
+
+    // Komponenty œcian
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
+    UStaticMeshComponent* WallUp;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
+    UStaticMeshComponent* WallDown;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
+    UStaticMeshComponent* WallRight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
+    UStaticMeshComponent* WallLeft;
+
+    // Tablica drzwi: Up, Down, Right, Left
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
+    TArray<UStaticMeshComponent*> Doors;
+
     UFUNCTION(BlueprintCallable)
     void UpdateDoors(const TArray<bool>& Status);
+
+    void FindDoorByName();
+    void FindWallByName();
+
+protected:
+    virtual void OnConstruction(const FTransform& Transform) override;
 };

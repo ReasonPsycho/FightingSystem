@@ -21,5 +21,11 @@ void UBuffSpeed::Apply_Implementation(AActor* Target)
     {
         float DefaultSpeed = Character->GetCharacterMovement()->MaxWalkSpeed;
         Character->GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed * SpeedMultiplier;
+
+        // Debug message
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("Speed buff applied!"));
+        }
     }
 }

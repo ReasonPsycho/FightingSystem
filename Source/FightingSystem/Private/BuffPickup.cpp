@@ -1,6 +1,8 @@
 #include "BuffPickup.h"
 #include "Components/SphereComponent.h"
+#include "BuffTrackerComponent.h"
 #include "Engine/Engine.h"
+#include "GameFramework/Character.h" // DODAJ TÊ LINIÊ
 
 ABuffPickup::ABuffPickup()
 {
@@ -14,6 +16,10 @@ ABuffPickup::ABuffPickup()
 
     CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &ABuffPickup::OnOverlapBegin);
 
+    PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupMesh"));
+    PickupMesh->SetupAttachment(RootComponent);
+    // You might want to disable collision on this mesh as the sphere handles pickup
+    //PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     CurrentBuff = nullptr;
 
 }
@@ -23,9 +29,15 @@ void ABuffPickup::BeginPlay()
     if (AvailableBuffs.Num() > 0)
     {
         int32 Index = FMath::RandRange(0, AvailableBuffs.Num() - 1);
+
         if (AvailableBuffs[Index])
         {
             CurrentBuff = NewObject<UBuffEffect>(this, AvailableBuffs[Index]);
+        }
+
+        if (CurrentBuff && CurrentBuff->PickupMesh && PickupMesh)
+        {
+            PickupMesh->SetStaticMesh(CurrentBuff->PickupMesh);
         }
     }
 
@@ -41,9 +53,20 @@ void ABuffPickup::BeginPlay()
 void ABuffPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-    if (OtherActor && CurrentBuff)
+	ACharacter* Character = Cast<ACharacter>(OtherActor);
+    if (Character && CurrentBuff && Character->IsPlayerControlled())
     {
-        CurrentBuff->Apply_Implementation(OtherActor);
+		UBuffTrackerComponent* Tracker = OtherActor->FindComponentByClass<UBuffTrackerComponent>();
+
+		if (Tracker)
+		{
+			Tracker->ApplyBuff(CurrentBuff);
+		}
+        else
+        {
+            CurrentBuff->Apply_Implementation(OtherActor);
+        }
+
         Destroy();
     }
 }

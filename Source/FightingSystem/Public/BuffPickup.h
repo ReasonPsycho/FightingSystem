@@ -20,6 +20,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Buff")
 	UBuffEffect* CurrentBuff;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	TSubclassOf<class UUserWidget> DecisionWidgetClass;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -28,6 +31,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UStaticMeshComponent* PickupMesh;
+
+	UPROPERTY()
+	class UUserWidget* DecisionWidgetInstance;
+
+	UFUNCTION(BlueprintCallable, Category = "Interaction")
+	void Interact(AActor* InteractingActor);
 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,

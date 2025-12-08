@@ -18,7 +18,7 @@ UBuffTrackerComponent::UBuffTrackerComponent()
 // Called when the game starts
 void UBuffTrackerComponent::BeginPlay()
 {
-	Super::BeginPlay();
+	//Super::BeginPlay();
 
 	// ...
 	
@@ -28,9 +28,13 @@ void UBuffTrackerComponent::BeginPlay()
 // Called every frame
 void UBuffTrackerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	//Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UBuffTrackerComponent::ApplyBuff(UBuffEffect* NewBuff)
+{
 }
 
 

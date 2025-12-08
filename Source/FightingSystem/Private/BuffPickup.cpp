@@ -2,7 +2,7 @@
 #include "Components/SphereComponent.h"
 #include "BuffTrackerComponent.h"
 #include "Engine/Engine.h"
-#include "GameFramework/Character.h" // DODAJ TÊ LINIÊ
+#include "GameFramework/Character.h"
 
 ABuffPickup::ABuffPickup()
 {
@@ -19,7 +19,7 @@ ABuffPickup::ABuffPickup()
     PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupMesh"));
     PickupMesh->SetupAttachment(RootComponent);
     // You might want to disable collision on this mesh as the sphere handles pickup
-    //PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     CurrentBuff = nullptr;
 
 }
@@ -66,8 +66,14 @@ void ABuffPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
         {
             CurrentBuff->Apply_Implementation(OtherActor);
         }
+        if (CurrentBuff)
+        {
+            CollisionSphere->DestroyComponent();
+		    PickupMesh->DestroyComponent();
+            Destroy();
+        }
 
-        Destroy();
+        
     }
 }
 

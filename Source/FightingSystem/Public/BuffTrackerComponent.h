@@ -7,6 +7,20 @@
 #include <BuffEffect.h>
 #include "BuffTrackerComponent.generated.h"
 
+USTRUCT(BlueprintType)
+struct FActiveBuffData
+{
+	GENERATED_BODY()
+
+public:
+	// The actual buff effect object
+	UPROPERTY()
+	UBuffEffect* BuffEffect = nullptr;
+
+	// The time remaining until the buff expires
+	UPROPERTY()
+	float TimeRemaining = 0.0f;
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class FIGHTINGSYSTEM_API UBuffTrackerComponent : public UActorComponent

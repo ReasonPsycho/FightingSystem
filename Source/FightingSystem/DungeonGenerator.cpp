@@ -107,12 +107,60 @@ TArray<int32> ADungeonGenerator::CheckNeighbors(int32 CellIndex) const
 
     return Neighbors;
 }
+TSubclassOf<ARoomActor> ADungeonGenerator::GetRandomWeightedRoom() const
+{
+    float TotalWeight = 0.f;
+    for (const auto& Entry : WeightedRooms)
+    {
+        TotalWeight += Entry.Weight;
+    }
+
+    float RandomValue = FMath::RandRange(0.f, TotalWeight);
+    float Accumulated = 0.f;
+
+    for (const auto& Entry : WeightedRooms)
+    {
+        Accumulated += Entry.Weight;
+        if (RandomValue <= Accumulated)
+        {
+            return Entry.RoomClass;
+        }
+    }
+
+    return nullptr;
+}
+TSubclassOf<ARoomActor> ADungeonGenerator::GetForcedOrRandomRoom(int32 Index) const
+{
+    int32 TotalCells = Width * Height;
+
+    // --- 1. POKOJE STARTOWE ---
+    if (Index < NumForcedStartRooms && StartRooms.Num() > 0)
+    {
+        int32 ForcedIndex = FMath::Clamp(Index, 0, StartRooms.Num() - 1);
+        return StartRooms[ForcedIndex];
+    }
+
+    // --- 2. POKOJE KOÑCOWE ---
+    int32 EndStartIndex = TotalCells - NumForcedEndRooms;
+    if (Index >= EndStartIndex && EndRooms.Num() > 0)
+    {
+        int32 EndIndex = Index - EndStartIndex;
+        EndIndex = FMath::Clamp(EndIndex, 0, EndRooms.Num() - 1);
+        return EndRooms[EndIndex];
+    }
+
+    // --- 3. RESZTA – system wag ---
+    return GetRandomWeightedRoom();
+}
+
 
 void ADungeonGenerator::GenerateDungeon()
 {
     UWorld* World = GetWorld();
     if (!World) return;
-    if (RoomPrefabs.Num() == 0) return;
+    if (WeightedRooms.Num() == 0) return;
+
+    //if (RoomPrefabs.Num() == 0) return;
 
     for (int32 x = 0; x < Width; x++)
     {
@@ -123,11 +171,16 @@ void ADungeonGenerator::GenerateDungeon()
 
             if (Board[Index].bVisited)
             {
-                int32 RoomIndex = FMath::RandRange(0, RoomPrefabs.Num() - 1);
+                //int32 RoomIndex = FMath::RandRange(0, RoomPrefabs.Num() - 1);
                 FVector Location(x * RoomOffset.X, y * RoomOffset.Y, 0.f);
                 FRotator Rot = FRotator::ZeroRotator;
 
-                TSubclassOf<ARoomActor> RoomClass = RoomPrefabs[RoomIndex];
+                //TSubclassOf<ARoomActor> RoomClass = RoomPrefabs[RoomIndex];
+                //TSubclassOf<ARoomActor> RoomClass = GetRandomWeightedRoom();
+                TSubclassOf<ARoomActor> RoomClass = GetForcedOrRandomRoom(Index);
+
+                //if (!RoomClass) continue;
+
                 if (!RoomClass) continue;
 
                 FActorSpawnParameters SpawnParams;

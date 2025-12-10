@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -9,7 +9,7 @@ struct FRoomEntry {
     GENERATED_BODY()
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<ARoomActor> RoomClass;
-    // Szansa/waga pojawienia siê pokoju (np. 1–100)
+    // Szansa/waga pojawienia siÄ™ pokoju (np. 1â€“100)
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     float Weight = 1.0f;
 };
@@ -33,17 +33,23 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<FRoomEntry> WeightedRooms;
 
-    // Ile pierwszych pokoi ma byæ specjalnych
+    // Ile pierwszych pokoi ma byÄ‡ specjalnych
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 NumForcedStartRooms = 3;
 
-    // Lista prefabsów dla startowych pokoi
+    // Lista prefabsÃ³w dla startowych pokoi
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<TSubclassOf<ARoomActor>> StartRooms;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 NumForcedEndRooms = 2;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<TSubclassOf<ARoomActor>> EndRooms;
+    float LastZLevel = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) 
+    float lowerBound = -200.f;
+    UPROPERTY()
+    TArray<float> CellZLevel;
+
 
 
 protected:
@@ -64,8 +70,8 @@ private:
     void MazeGenerator();
     TSubclassOf<ARoomActor> GetRandomWeightedRoom() const;
     TSubclassOf<ARoomActor> GetForcedOrRandomRoom(int32 Index) const;
-
-
+    TArray<int32> FilterZValuesForCell(int32 CellIndex, const TArray<int32>& Candidates) const;
+    float GetNextZLevel();
     void GenerateDungeon();
     TArray<int32> CheckNeighbors(int32 CellIndex) const;
 };

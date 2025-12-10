@@ -1,4 +1,4 @@
-// DungeonGenerator.cpp
+ï»¿// DungeonGenerator.cpp
 #include "DungeonGenerator.h"
 #include "Engine/World.h"
 #include "RoomActor.h"
@@ -15,21 +15,79 @@ void ADungeonGenerator::BeginPlay()
     MazeGenerator();
 }
 
+/*
+=====================================================
+    FUNKCJA FILTRUJÄ„CA DOPUSZCZALNE POZIOMY Z DLA CELLI
+=====================================================
+*/
+TArray<int32> ADungeonGenerator::FilterZValuesForCell(int32 CellIndex, const TArray<int32>& Candidates) const
+{
+    TArray<int32> Out;
+
+    for (int32 Value : Candidates)
+    {
+        bool bValid = true;
+
+        TArray<int32> Adjacent;
+
+        // Up
+        if (CellIndex - Width >= 0)
+            Adjacent.Add(CellIndex - Width);
+
+        // Down
+        if (CellIndex + Width < Width * Height)
+            Adjacent.Add(CellIndex + Width);
+
+        // Right
+        if ((CellIndex + 1) % Width != 0)
+            Adjacent.Add(CellIndex + 1);
+
+        // Left
+        if (CellIndex % Width != 0)
+            Adjacent.Add(CellIndex - 1);
+
+        for (int32 Neighbor : Adjacent)
+        {
+            if (!Board[Neighbor].bVisited) continue;
+
+            int32 NeighborZLevel = CellZLevel[Neighbor];
+
+            if (FMath::Abs(NeighborZLevel - Value) > 1)
+            {
+                bValid = false;
+                break;
+            }
+        }
+
+        if (bValid)
+            Out.Add(Value);
+    }
+
+    return Out;
+}
+
+/*
+=====================================================
+                MAZE GENERATOR
+=====================================================
+*/
 void ADungeonGenerator::MazeGenerator()
 {
-    // Upewniamy siê, ¿e plansza ma odpowiedni rozmiar i ka¿da komórka jest zainicjalizowana
     Board.SetNum(Width * Height);
+    CellZLevel.Init(0, Width * Height); // domyÅ›lnie wszystkie = 0
+
     for (int32 i = 0; i < Board.Num(); ++i)
     {
         Board[i].bVisited = false;
-        Board[i].Status.Init(false, 4); // 4 kierunki: Up, Down, Right, Left
+        Board[i].Status.Init(false, 4);
     }
 
     int32 CurrentCell = 0;
     TArray<int32> Path;
 
     int32 Iterations = 0;
-    const int32 MaxIterations = Width * Height * 10; // limit bezpieczeñstwa
+    const int32 MaxIterations = Width * Height * 10;
+
     while (Iterations++ < MaxIterations)
     {
         if (!Board.IsValidIndex(CurrentCell)) break;
@@ -52,26 +110,50 @@ void ADungeonGenerator::MazeGenerator()
 
             int32 NewCell = Neighbors[FMath::RandRange(0, Neighbors.Num() - 1)];
 
-            // Symetryczne otwieranie drzwi w obu pokojach
-            if (NewCell == CurrentCell + 1) // Right
+            // ---------------------------------------
+            // Otwieranie drzwi symetryczne
+            // ---------------------------------------
+            if (NewCell == CurrentCell + 1)
             {
-                Board[CurrentCell].Status[2] = true; // Right
-                Board[NewCell].Status[3] = true;     // Left
+                Board[CurrentCell].Status[2] = true;
+                Board[NewCell].Status[3] = true;
             }
-            else if (NewCell == CurrentCell - 1) // Left
+            else if (NewCell == CurrentCell - 1)
             {
-                Board[CurrentCell].Status[3] = true; // Left
-                Board[NewCell].Status[2] = true;     // Right
+                Board[CurrentCell].Status[3] = true;
+                Board[NewCell].Status[2] = true;
             }
-            else if (NewCell == CurrentCell + Width) // Down
+            else if (NewCell == CurrentCell + Width)
             {
-                Board[CurrentCell].Status[1] = true; // Down
-                Board[NewCell].Status[0] = true;     // Up
+                Board[CurrentCell].Status[1] = true;
+                Board[NewCell].Status[0] = true;
             }
-            else if (NewCell == CurrentCell - Width) // Up
+            else if (NewCell == CurrentCell - Width)
             {
-                Board[CurrentCell].Status[0] = true; // Up
-                Board[NewCell].Status[1] = true;     // Down
+                Board[CurrentCell].Status[0] = true;
+                Board[NewCell].Status[1] = true;
+            }
+
+            // ---------------------------------------
+            // GENEROWANIE ZLEVEL DLA NEWCELL
+            // ---------------------------------------
+
+            int32 CurrentZ = CellZLevel[CurrentCell];
+
+            TArray<int32> Possible;
+            Possible.Add(CurrentZ - 1);
+            Possible.Add(CurrentZ);
+            Possible.Add(CurrentZ + 1);
+
+            Possible = FilterZValuesForCell(NewCell, Possible);
+
+            if (Possible.Num() > 0)
+            {
+                CellZLevel[NewCell] = Possible[FMath::RandRange(0, Possible.Num() - 1)];
+            }
+            else
+            {
+                CellZLevel[NewCell] = CurrentZ; // fallback
             }
 
             CurrentCell = NewCell;
@@ -81,7 +163,11 @@ void ADungeonGenerator::MazeGenerator()
     GenerateDungeon();
 }
 
-
+/*
+=====================================================
+           SPRAWDZANIE SÄ„SIADÃ“W W LABIRYNCIE
+=====================================================
+*/
 TArray<int32> ADungeonGenerator::CheckNeighbors(int32 CellIndex) const
 {
     TArray<int32> Neighbors;
@@ -89,31 +175,31 @@ TArray<int32> ADungeonGenerator::CheckNeighbors(int32 CellIndex) const
     const int32 Total = Board.Num();
     if (!Board.IsValidIndex(CellIndex)) return Neighbors;
 
-    // Up
     if (CellIndex - Width >= 0 && !Board[CellIndex - Width].bVisited)
         Neighbors.Add(CellIndex - Width);
 
-    // Down
     if (CellIndex + Width < Total && !Board[CellIndex + Width].bVisited)
         Neighbors.Add(CellIndex + Width);
 
-    // Right
     if ((CellIndex + 1) % Width != 0 && !Board[CellIndex + 1].bVisited)
         Neighbors.Add(CellIndex + 1);
 
-    // Left
     if (CellIndex % Width != 0 && !Board[CellIndex - 1].bVisited)
         Neighbors.Add(CellIndex - 1);
 
     return Neighbors;
 }
+
+/*
+=====================================================
+        WYBÃ“R PRZYPADKOWEGO POKOJU WG WAG
+=====================================================
+*/
 TSubclassOf<ARoomActor> ADungeonGenerator::GetRandomWeightedRoom() const
 {
     float TotalWeight = 0.f;
     for (const auto& Entry : WeightedRooms)
-    {
         TotalWeight += Entry.Weight;
-    }
 
     float RandomValue = FMath::RandRange(0.f, TotalWeight);
     float Accumulated = 0.f;
@@ -122,25 +208,27 @@ TSubclassOf<ARoomActor> ADungeonGenerator::GetRandomWeightedRoom() const
     {
         Accumulated += Entry.Weight;
         if (RandomValue <= Accumulated)
-        {
             return Entry.RoomClass;
-        }
     }
 
     return nullptr;
 }
+
+/*
+=====================================================
+            POKOJE STARTOWE / KOÅƒCOWE / LOSOWE
+=====================================================
+*/
 TSubclassOf<ARoomActor> ADungeonGenerator::GetForcedOrRandomRoom(int32 Index) const
 {
     int32 TotalCells = Width * Height;
 
-    // --- 1. POKOJE STARTOWE ---
     if (Index < NumForcedStartRooms && StartRooms.Num() > 0)
     {
         int32 ForcedIndex = FMath::Clamp(Index, 0, StartRooms.Num() - 1);
         return StartRooms[ForcedIndex];
     }
 
-    // --- 2. POKOJE KOÑCOWE ---
     int32 EndStartIndex = TotalCells - NumForcedEndRooms;
     if (Index >= EndStartIndex && EndRooms.Num() > 0)
     {
@@ -149,18 +237,19 @@ TSubclassOf<ARoomActor> ADungeonGenerator::GetForcedOrRandomRoom(int32 Index) co
         return EndRooms[EndIndex];
     }
 
-    // --- 3. RESZTA – system wag ---
     return GetRandomWeightedRoom();
 }
 
-
+/*
+=====================================================
+                GENEROWANIE DUNGEONU W ÅšWIECIE
+=====================================================
+*/
 void ADungeonGenerator::GenerateDungeon()
 {
     UWorld* World = GetWorld();
     if (!World) return;
     if (WeightedRooms.Num() == 0) return;
-
-    //if (RoomPrefabs.Num() == 0) return;
 
     for (int32 x = 0; x < Width; x++)
     {
@@ -171,16 +260,12 @@ void ADungeonGenerator::GenerateDungeon()
 
             if (Board[Index].bVisited)
             {
-                //int32 RoomIndex = FMath::RandRange(0, RoomPrefabs.Num() - 1);
-                FVector Location(x * RoomOffset.X, y * RoomOffset.Y, 0.f);
+                // rzeczywisty Z na podstawie poziomu ZLevel
+                float ZLevel = CellZLevel[Index] * lowerBound;
+
+                FVector Location(x * RoomOffset.X, y * RoomOffset.Y, ZLevel);
                 FRotator Rot = FRotator::ZeroRotator;
-
-                //TSubclassOf<ARoomActor> RoomClass = RoomPrefabs[RoomIndex];
-                //TSubclassOf<ARoomActor> RoomClass = GetRandomWeightedRoom();
                 TSubclassOf<ARoomActor> RoomClass = GetForcedOrRandomRoom(Index);
-
-                //if (!RoomClass) continue;
-
                 if (!RoomClass) continue;
 
                 FActorSpawnParameters SpawnParams;
@@ -190,15 +275,12 @@ void ADungeonGenerator::GenerateDungeon()
                 {
                     NewRoom->SetActorLabel(FString::Printf(TEXT("%d-%d"), x, y));
 
-                    // Upewniamy siê, ¿e Status ma 4 elementy
                     TArray<bool> StatusCopy = Board[Index].Status;
                     if (StatusCopy.Num() != 4)
                         StatusCopy.Init(false, 4);
 
-                    // Wywo³anie UpdateDoors po przypisaniu drzwi i œcian
                     NewRoom->UpdateDoors(StatusCopy);
                 }
-
             }
         }
     }

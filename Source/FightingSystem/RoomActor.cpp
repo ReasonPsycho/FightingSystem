@@ -21,7 +21,7 @@ void ARoomActor::OnConstruction(const FTransform& Transform)
 
     FindDoorByName();
     FindWallByName();
-
+	FindPlatformByName();
     // Upewnij siê, ¿e tablica Doors jest w kolejnoœci Up, Down, Right, Left
     Doors.Empty();
     Doors.Add(DoorUp);
@@ -56,6 +56,47 @@ void ARoomActor::FindDoorByName()
         }
     }
 }
+void ARoomActor::FindPlatformByName()
+{
+    TArray<UStaticMeshComponent*> Components;
+    GetComponents<UStaticMeshComponent>(Components);
+
+    for (UStaticMeshComponent* Comp : Components)
+    {
+        if (!Comp) continue;
+
+        FString Name = Comp->GetName();
+
+        // Przypisujemy platformê do odpowiedniej strony
+        if (Name.Contains(TEXT("Door2")) && Name.Contains(TEXT("Plat")))
+        {
+            DoorUp_LowerPlatform = Comp;
+        }
+        else if (Name.Contains(TEXT("Door1")) && Name.Contains(TEXT("Plat")))
+        {
+            DoorDown_LowerPlatform = Comp;
+        }
+        else if (Name.Contains(TEXT("Door4")) && Name.Contains(TEXT("Plat")))
+        {
+            DoorRight_LowerPlatform = Comp;
+        }
+        else if (Name.Contains(TEXT("Door3")) && Name.Contains(TEXT("Plat")))
+        {
+            DoorLeft_LowerPlatform = Comp;
+        }
+
+        // Ukrywanie platform
+        if (Name.Contains(TEXT("Platform")) || Name.Contains(TEXT("Plat")))
+        {
+            Comp->SetVisibility(false, true);
+            Comp->SetHiddenInGame(true, true);
+            Comp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+            UE_LOG(LogTemp, Warning, TEXT("Znaleziono i ukryto platformê: %s"), *Name);
+        }
+    }
+}
+
 
 void ARoomActor::FindWallByName()
 {
@@ -93,8 +134,9 @@ void ARoomActor::UpdateDoors(const TArray<bool>& Status)
 
     UStaticMeshComponent* DoorComps[4] = { DoorUp, DoorDown, DoorRight, DoorLeft };
     UStaticMeshComponent* WallComps[4] = { WallUp, WallDown, WallRight, WallLeft };
+    UStaticMeshComponent* PlatComps[4] = { DoorUp_LowerPlatform, DoorDown_LowerPlatform, DoorRight_LowerPlatform, DoorLeft_LowerPlatform };
 
-    for (int32 i = 0; i < 4; ++i)
+    for (int32 i = 0; i < 4; i++)
     {
         bool bOpen = Status[i];
 
@@ -112,5 +154,14 @@ void ARoomActor::UpdateDoors(const TArray<bool>& Status)
             WallComps[i]->SetHiddenInGame(!bWallVisible, true);
             WallComps[i]->SetCollisionEnabled(bWallVisible ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
         }
+
+        // Platforma aktywna tylko jeœli drzwi s¹ otwarte
+        if (PlatComps[i])
+        {
+            PlatComps[i]->SetVisibility(bOpen, true);
+            PlatComps[i]->SetHiddenInGame(!bOpen, true);
+            PlatComps[i]->SetCollisionEnabled(bOpen ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
+        }
     }
 }
+

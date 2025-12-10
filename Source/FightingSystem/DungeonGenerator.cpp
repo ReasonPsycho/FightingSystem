@@ -275,6 +275,47 @@ void ADungeonGenerator::GenerateDungeon()
                 {
                     NewRoom->SetActorLabel(FString::Printf(TEXT("%d-%d"), x, y));
 
+                    // Przygotuj ZDiff PRZED wywołaniem UpdateDoors
+                    // Przygotuj ZDiff PRZED wywołaniem UpdateDoors
+                    TArray<int32> ZDiff;
+                    ZDiff.Init(0, 4);
+
+                    // Obliczamy różnicę w RZECZYWISTYCH Z (world Z = level * lowerBound)
+                    float CurrentWorldZ = CellZLevel[Index] * lowerBound;
+
+                    // UP = index - Width
+                    if (Index - Width >= 0)
+                    {
+                        float NeighborWorldZ = CellZLevel[Index - Width] * lowerBound;
+                        ZDiff[0] = FMath::RoundToInt(NeighborWorldZ - CurrentWorldZ); // <0 => sąsiad niżej
+                    }
+
+                    // DOWN = index + Width
+                    if (Index + Width < Width * Height)
+                    {
+                        float NeighborWorldZ = CellZLevel[Index + Width] * lowerBound;
+                        ZDiff[1] = FMath::RoundToInt(NeighborWorldZ - CurrentWorldZ);
+                    }
+
+                    // RIGHT = index + 1
+                    if ((Index + 1) % Width != 0)
+                    {
+                        float NeighborWorldZ = CellZLevel[Index + 1] * lowerBound;
+                        ZDiff[2] = FMath::RoundToInt(NeighborWorldZ - CurrentWorldZ);
+                    }
+
+                    // LEFT = index - 1
+                    if (Index % Width != 0)
+                    {
+                        float NeighborWorldZ = CellZLevel[Index - 1] * lowerBound;
+                        ZDiff[3] = FMath::RoundToInt(NeighborWorldZ - CurrentWorldZ);
+                    }
+
+                    // Przypisz ZDiff zanim zaktualizujesz drzwi/platformy
+                    NewRoom->NeighborZDiff = ZDiff;
+
+
+                    // Teraz przekaż status drzwi — UpdateDoors użyje już poprawnego NeighborZDiff
                     TArray<bool> StatusCopy = Board[Index].Status;
                     if (StatusCopy.Num() != 4)
                         StatusCopy.Init(false, 4);
@@ -285,3 +326,4 @@ void ADungeonGenerator::GenerateDungeon()
         }
     }
 }
+

@@ -50,6 +50,9 @@ public:
     // Tablica drzwi: Up, Down, Right, Left
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room")
     TArray<UStaticMeshComponent*> Doors;
+    UPROPERTY()
+    TArray<int32> NeighborZDiff; // kolejnoœæ: Up, Down, Right, Left
+
 
     UFUNCTION(BlueprintCallable)
     void UpdateDoors(const TArray<bool>& Status);

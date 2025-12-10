@@ -156,12 +156,18 @@ void ARoomActor::UpdateDoors(const TArray<bool>& Status)
         }
 
         // Platforma aktywna tylko jeœli drzwi s¹ otwarte
+        // Platforma aktywna tylko jeœli drzwi s¹ otwarte I s¹siad jest ni¿ej
         if (PlatComps[i])
         {
-            PlatComps[i]->SetVisibility(bOpen, true);
-            PlatComps[i]->SetHiddenInGame(!bOpen, true);
-            PlatComps[i]->SetCollisionEnabled(bOpen ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
+            bool bLower = (NeighborZDiff.IsValidIndex(i) && NeighborZDiff[i] < 0);
+
+            bool bShowPlat = bOpen && bLower;
+
+            PlatComps[i]->SetVisibility(bShowPlat, true);
+            PlatComps[i]->SetHiddenInGame(!bShowPlat, true);
+            PlatComps[i]->SetCollisionEnabled(bShowPlat ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
         }
+
     }
 }
 

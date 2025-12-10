@@ -1,4 +1,4 @@
-#include "RoomActor.h"
+ï»¿#include "RoomActor.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
 
@@ -10,7 +10,7 @@ ARoomActor::ARoomActor()
     USceneComponent* Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
     RootComponent = Root;
 
-    // Pocz¹tkowo puste
+    // PoczÄ…tkowo puste
     DoorUp = DoorDown = DoorRight = DoorLeft = nullptr;
     WallUp = WallDown = WallRight = WallLeft = nullptr;
 }
@@ -22,7 +22,7 @@ void ARoomActor::OnConstruction(const FTransform& Transform)
     FindDoorByName();
     FindWallByName();
 	FindPlatformByName();
-    // Upewnij siê, ¿e tablica Doors jest w kolejnoœci Up, Down, Right, Left
+    // Upewnij siÄ™, Å¼e tablica Doors jest w kolejnoÅ›ci Up, Down, Right, Left
     Doors.Empty();
     Doors.Add(DoorUp);
     Doors.Add(DoorDown);
@@ -67,7 +67,7 @@ void ARoomActor::FindPlatformByName()
 
         FString Name = Comp->GetName();
 
-        // Przypisujemy platformê do odpowiedniej strony
+        // Przypisujemy platformÄ™ do odpowiedniej strony
         if (Name.Contains(TEXT("Door2")) && Name.Contains(TEXT("Plat")))
         {
             DoorUp_LowerPlatform = Comp;
@@ -92,7 +92,7 @@ void ARoomActor::FindPlatformByName()
             Comp->SetHiddenInGame(true, true);
             Comp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-            UE_LOG(LogTemp, Warning, TEXT("Znaleziono i ukryto platformê: %s"), *Name);
+            UE_LOG(LogTemp, Warning, TEXT("Znaleziono i ukryto platformÄ™: %s"), *Name);
         }
     }
 }
@@ -117,12 +117,12 @@ void ARoomActor::FindWallByName()
 
         if (Name.StartsWith(TEXT("Wall")))
         {
-            // Ustawiamy wszystkie œciany jako niewidoczne i wy³¹czamy kolizjê
+            // Ustawiamy wszystkie Å›ciany jako niewidoczne i wyÅ‚Ä…czamy kolizjÄ™
             Comp->SetVisibility(false, true);
             Comp->SetHiddenInGame(true, true);
             Comp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-            UE_LOG(LogTemp, Warning, TEXT("Znaleziono i ukryto œcianê: %s"), *Name);
+            UE_LOG(LogTemp, Warning, TEXT("Znaleziono i ukryto Å›cianÄ™: %s"), *Name);
         }
     }
 }
@@ -140,6 +140,7 @@ void ARoomActor::UpdateDoors(const TArray<bool>& Status)
     {
         bool bOpen = Status[i];
 
+        // Ustawienie drzwi
         if (DoorComps[i])
         {
             DoorComps[i]->SetVisibility(bOpen, true);
@@ -147,6 +148,7 @@ void ARoomActor::UpdateDoors(const TArray<bool>& Status)
             DoorComps[i]->SetCollisionEnabled(bOpen ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
         }
 
+        // Ustawienie Å›ciany
         if (WallComps[i])
         {
             bool bWallVisible = !bOpen;
@@ -155,19 +157,24 @@ void ARoomActor::UpdateDoors(const TArray<bool>& Status)
             WallComps[i]->SetCollisionEnabled(bWallVisible ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
         }
 
-        // Platforma aktywna tylko jeœli drzwi s¹ otwarte
-        // Platforma aktywna tylko jeœli drzwi s¹ otwarte I s¹siad jest ni¿ej
+        // Ustawienie platformy
         if (PlatComps[i])
         {
             bool bLower = (NeighborZDiff.IsValidIndex(i) && NeighborZDiff[i] < 0);
-
             bool bShowPlat = bOpen && bLower;
 
             PlatComps[i]->SetVisibility(bShowPlat, true);
             PlatComps[i]->SetHiddenInGame(!bShowPlat, true);
             PlatComps[i]->SetCollisionEnabled(bShowPlat ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
-        }
 
+            // JeÅ›li platforma jest widoczna â†’ wyÅ‚Ä…cz normalne drzwi
+            if (bShowPlat && DoorComps[i])
+            {
+                DoorComps[i]->SetVisibility(false, true);
+                DoorComps[i]->SetHiddenInGame(true, true);
+                DoorComps[i]->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            }
+        }
     }
 }
 

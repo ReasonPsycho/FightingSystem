@@ -33,8 +33,22 @@ void UBuffTrackerComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	// ...
 }
 
-void UBuffTrackerComponent::ApplyBuff(UBuffEffect* NewBuff)
+void UBuffTrackerComponent::ApplyBuff(TSubclassOf<UBuffEffect> BuffClass)
 {
+    if (!BuffClass) return;
+
+    UBuffEffect* NewBuff = NewObject<UBuffEffect>(this, BuffClass);
+
+    if (NewBuff)
+    {
+        NewBuff->Apply(GetOwner());
+
+        FActiveBuffData NewData;
+        NewData.BuffEffect = NewBuff;
+        NewData.Duration = NewBuff->Duration;
+
+        ActiveBuffs.Add(NewData);
+    }
 }
 
 

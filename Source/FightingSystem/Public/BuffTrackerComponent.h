@@ -13,13 +13,11 @@ struct FActiveBuffData
 	GENERATED_BODY()
 
 public:
-	// The actual buff effect object
 	UPROPERTY()
 	UBuffEffect* BuffEffect = nullptr;
 
-	// The time remaining until the buff expires
 	UPROPERTY()
-	float TimeRemaining = 0.0f;
+	float Duration = 0.0f;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -41,7 +39,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Buffs")
-	void ApplyBuff(UBuffEffect* NewBuff);
+	void ApplyBuff(TSubclassOf<UBuffEffect> BuffClass);
 
 	UPROPERTY()
 	TArray<struct FActiveBuffData> ActiveBuffs;

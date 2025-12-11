@@ -18,7 +18,7 @@ public:
 	TArray<TSubclassOf<UBuffEffect>> AvailableBuffs;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Buff")
-	UBuffEffect* CurrentBuff;
+	TSubclassOf<UBuffEffect> CurrentBuffClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	TSubclassOf<class UUserWidget> DecisionWidgetClass;

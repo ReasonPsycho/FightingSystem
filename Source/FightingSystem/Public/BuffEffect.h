@@ -21,11 +21,13 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff")
     FText Description;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff")
+	float Duration;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
     UStaticMesh* PickupMesh;
 
     UFUNCTION(BlueprintNativeEvent, Category = "Buff")
     void Apply(AActor* Target);
-
     virtual void Apply_Implementation(AActor* Target);
 };

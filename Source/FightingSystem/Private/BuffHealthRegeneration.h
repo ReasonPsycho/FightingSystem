@@ -7,7 +7,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class FIGHTINGSYSTEM_API UBuffHealthRegeneration : public UBuffEffect
 {
 	GENERATED_BODY()

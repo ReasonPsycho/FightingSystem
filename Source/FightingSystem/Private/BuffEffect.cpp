@@ -5,6 +5,8 @@
 
 // BuffEffect.cpp
 
+
+
 void UBuffEffect::Apply_Implementation(AActor* Target)
 {
 	//

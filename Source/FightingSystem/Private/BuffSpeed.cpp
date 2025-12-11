@@ -4,6 +4,7 @@
 #include "BuffSpeed.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Engine/Engine.h"
 
 
 UBuffSpeed::UBuffSpeed()

@@ -20,7 +20,6 @@ ABuffPickup::ABuffPickup()
     PickupMesh->SetupAttachment(RootComponent);
     // You might want to disable collision on this mesh as the sphere handles pickup
     PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    CurrentBuff = nullptr;
 
 }
 
@@ -30,50 +29,50 @@ void ABuffPickup::BeginPlay()
     {
         int32 Index = FMath::RandRange(0, AvailableBuffs.Num() - 1);
 
-        if (AvailableBuffs[Index])
+        CurrentBuffClass = AvailableBuffs[Index];
+
+        const UBuffEffect* DefaultBuff = CurrentBuffClass.GetDefaultObject();
+
+        if (DefaultBuff)
         {
-            CurrentBuff = NewObject<UBuffEffect>(this, AvailableBuffs[Index]);
-        }
+            PickupMesh->SetStaticMesh(DefaultBuff->PickupMesh);
 
-        if (CurrentBuff && CurrentBuff->PickupMesh && PickupMesh)
+            if (GEngine)
+            {
+                FString BuffName = DefaultBuff->Name.ToString();
+                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Buff: %s"), *BuffName));
+            }
+        }
+        if (!PickupMesh)
         {
-            PickupMesh->SetStaticMesh(CurrentBuff->PickupMesh);
+            UE_LOG(LogTemp, Error, TEXT("PickupMesh is null in BeginPlay for %s!"), *GetName());
+            return;
         }
-    }
-
-    if (CurrentBuff && GEngine)
-    {
-        FString BuffName = CurrentBuff->Name.ToString();
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Buff: %s"), *BuffName));
-    }
-
-	
+    }	
 }
 
 void ABuffPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ACharacter* Character = Cast<ACharacter>(OtherActor);
-    if (Character && CurrentBuff && Character->IsPlayerControlled())
+    if (Character && CurrentBuffClass && Character->IsPlayerControlled())
     {
 		UBuffTrackerComponent* Tracker = OtherActor->FindComponentByClass<UBuffTrackerComponent>();
 
 		if (Tracker)
 		{
-			Tracker->ApplyBuff(CurrentBuff);
+            Tracker->ApplyBuff(CurrentBuffClass);
 		}
         else
         {
-            CurrentBuff->Apply_Implementation(OtherActor);
-        }
-        if (CurrentBuff)
-        {
-            CollisionSphere->DestroyComponent();
-		    PickupMesh->DestroyComponent();
-            Destroy();
+            UBuffEffect* TempBuff = NewObject<UBuffEffect>(OtherActor, CurrentBuffClass);
+            if (TempBuff)
+            {
+                TempBuff->Apply_Implementation(OtherActor);
+            }
         }
 
-        
+        Destroy();        
     }
 }
 

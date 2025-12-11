@@ -1,0 +1,51 @@
+
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "BuffEffect.h"
+#include "BuffPickup.generated.h"
+
+UCLASS()
+class FIGHTINGSYSTEM_API ABuffPickup : public AActor
+{
+	GENERATED_BODY()
+	
+public:	
+	ABuffPickup();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buff")
+	TArray<TSubclassOf<UBuffEffect>> AvailableBuffs;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Buff")
+	UBuffEffect* CurrentBuff;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	TSubclassOf<class UUserWidget> DecisionWidgetClass;
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class USphereComponent* CollisionSphere;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UStaticMeshComponent* PickupMesh;
+
+	UPROPERTY()
+	class UUserWidget* DecisionWidgetInstance;
+
+	UFUNCTION(BlueprintCallable, Category = "Interaction")
+	void Interact(AActor* InteractingActor);
+
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	
+	
+};

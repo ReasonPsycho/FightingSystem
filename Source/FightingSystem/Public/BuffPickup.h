@@ -35,8 +35,8 @@ protected:
 	UPROPERTY()
 	class UUserWidget* DecisionWidgetInstance;
 
-	UFUNCTION(BlueprintCallable, Category = "Interaction")
-	void Interact(AActor* InteractingActor);
+	/*UFUNCTION(BlueprintCallable, Category = "Interaction")
+	void Interact(AActor* InteractingActor);*/
 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,

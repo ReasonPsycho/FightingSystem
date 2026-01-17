@@ -30,7 +30,10 @@ protected:
 	class USphereComponent* CollisionSphere;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+
 	class UStaticMeshComponent* PickupMesh;
+
+	//class USkeletalMeshComponent* PickupMesh;
 
 	UPROPERTY()
 	class UUserWidget* DecisionWidgetInstance;

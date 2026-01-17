@@ -25,7 +25,13 @@ public:
 	float Duration;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
+
     UStaticMesh* PickupMesh;
+
+    //USkeletalMesh* PickupSkeletalMesh;
+
+    /*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
+    class UAnimSequence* IdleAnimation; */
 
     UFUNCTION(BlueprintNativeEvent, Category = "Buff")
     void Apply(AActor* Target);

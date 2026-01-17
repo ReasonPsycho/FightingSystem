@@ -16,7 +16,9 @@ ABuffPickup::ABuffPickup()
 
     CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &ABuffPickup::OnOverlapBegin);
 
+    //PickupMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PickupMesh"));
     PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupMesh"));
+
     PickupMesh->SetupAttachment(RootComponent);
     // You might want to disable collision on this mesh as the sphere handles pickup
     PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -33,9 +35,16 @@ void ABuffPickup::BeginPlay()
 
         const UBuffEffect* DefaultBuff = CurrentBuffClass.GetDefaultObject();
 
-        if (DefaultBuff)
+        if (DefaultBuff && PickupMesh)
         {
             PickupMesh->SetStaticMesh(DefaultBuff->PickupMesh);
+
+            /*PickupMesh->SetSkeletalMesh(DefaultBuff->PickupSkeletalMesh);
+
+            if (DefaultBuff->IdleAnimation)
+            {
+                PickupMesh->PlayAnimation(DefaultBuff->IdleAnimation, true);
+            }*/
 
             if (GEngine)
             {

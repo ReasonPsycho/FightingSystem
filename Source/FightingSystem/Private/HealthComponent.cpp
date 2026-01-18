@@ -1,5 +1,8 @@
 #include "HealthComponent.h"
+
 #include <algorithm>
+
+#include "HealthManagerSubsystem.h"
 
 UHealthComponent::UHealthComponent()
 {
@@ -9,6 +12,13 @@ UHealthComponent::UHealthComponent()
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (UWorld* world = GetWorld()) {
+		if (UHealthManagerSubsystem* manager = world->GetSubsystem<UHealthManagerSubsystem>())
+		{
+			manager->RegisterComponent(this);
+		}
+	}
 }
 
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -31,31 +41,18 @@ void UHealthComponent::DamageFlat(float damage_amount)
 	check(damage_amount > 0.0f);
 	set_health(std::clamp(health() - damage_amount, -1.0f, health()));
 	UE_LOG(LogTemp, Warning, TEXT("%f amount of damage taken"), damage_amount);
-	if (health() < 0.0f)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Destroyed!"));
-		GetOwner()->Destroy();
-	}
 }
 
 void UHealthComponent::DamageFullHealthPercentage(float percentage)
 {
 	check(percentage > 0.0f);
 	set_health(std::clamp(max_health() * percentage, -1.0f, health()));
-	if (health() < 0.0f)
-	{
-		GetOwner()->Destroy();
-	}
 }
 
 void UHealthComponent::DamageCurrentHealthPercentage(float percentage)
 {
 	check(percentage > 0.0f);
 	set_health(std::clamp(health() * percentage, -1.0f, health()));
-	if (health() < 0.0f)
-	{
-		GetOwner()->Destroy();
-	}
 }
 
 void UHealthComponent::HealFlat(float heal_amount)
@@ -74,4 +71,17 @@ void UHealthComponent::HealMissingHealthPercentage(float percentage)
 {
 	check(percentage > 0.0f);
 	set_health(std::clamp(health() + (max_health() - health()) * percentage, health(), max_health()));
+}
+
+void UHealthComponent::Die() {
+	if (!ShouldDie()) {
+		return;
+	}
+
+	if (UWorld* world = GetWorld()) {
+		if (UHealthManagerSubsystem* manager = world->GetSubsystem<UHealthManagerSubsystem>())
+		{
+			manager->ReportDeath(this);
+		}
+	}
 }

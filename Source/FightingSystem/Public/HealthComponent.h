@@ -4,7 +4,6 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class FIGHTINGSYSTEM_API UHealthComponent : public UActorComponent
 {
@@ -27,6 +26,11 @@ public:
 	UFUNCTION(BlueprintPure, Category = "HealthComponent")
 	bool ShouldDie() const { return health_ <= 0.0f; }
 
+	UFUNCTION(BlueprintPure, Category = "HealthComponent")
+	bool Dying() const { return dying_; }
+
+	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
+	void SetDying(bool value) { dying_ = value; }
 
 	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
 	void DamageFlat(float damage_amount);
@@ -46,12 +50,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
 	void HealMissingHealthPercentage(float percentage);
 
+	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
+	void Die();
+
 private:
 	void set_health(float health);
 	void max_health(float health);
 
-	float health_ = 30.0f;
-	float max_health_ = 30.0f;
+	float health_ = 10.0f;
+	float max_health_ = 10.0f;
+	bool dying_ = false;
 
 protected:
 	virtual void BeginPlay() override;

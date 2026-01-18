@@ -57,8 +57,8 @@ private:
 	void set_health(float health);
 	void max_health(float health);
 
-	float health_ = 10.0f;
-	float max_health_ = 10.0f;
+	float health_ = 1.0f;
+	float max_health_ = 1.0f;
 	bool dying_ = false;
 
 protected:

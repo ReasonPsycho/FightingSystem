@@ -29,6 +29,11 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UHealthComponent::set_health(float health)
 {
 	health_ = health;
+	if (health_ <= 0.0f) {
+		if (OnDeath.IsBound()) {
+			OnDeath.Broadcast();
+		}
+	}
 }
 
 void UHealthComponent::max_health(float health)

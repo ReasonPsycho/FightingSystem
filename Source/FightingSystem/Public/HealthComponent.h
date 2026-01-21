@@ -4,6 +4,8 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeath);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class FIGHTINGSYSTEM_API UHealthComponent : public UActorComponent
 {
@@ -53,6 +55,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
 	void Die();
 
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnDeath OnDeath;
 private:
 	void set_health(float health);
 	void max_health(float health);

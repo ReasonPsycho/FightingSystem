@@ -36,4 +36,5 @@ public:
     UFUNCTION(BlueprintNativeEvent, Category = "Buff")
     void Apply(AActor* Target);
     virtual void Apply_Implementation(AActor* Target);
+
 };

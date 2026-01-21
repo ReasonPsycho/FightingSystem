@@ -27,6 +27,7 @@ ABuffPickup::ABuffPickup()
 
 void ABuffPickup::BeginPlay()
 {
+    Super::BeginPlay();
     if (AvailableBuffs.Num() > 0)
     {
         int32 Index = FMath::RandRange(0, AvailableBuffs.Num() - 1);
@@ -66,6 +67,11 @@ void ABuffPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 	ACharacter* Character = Cast<ACharacter>(OtherActor);
     if (Character && CurrentBuffClass && Character->IsPlayerControlled())
     {
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("bububububffff"));
+        }
+
 		UBuffTrackerComponent* Tracker = OtherActor->FindComponentByClass<UBuffTrackerComponent>();
 
 		if (Tracker)
@@ -81,6 +87,7 @@ void ABuffPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
             }
         }
 
+        SetActorEnableCollision(false);
         Destroy();        
     }
 }

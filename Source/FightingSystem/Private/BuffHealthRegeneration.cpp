@@ -15,26 +15,26 @@ void UBuffHealthRegeneration::Apply_Implementation(AActor* Target)
     TArray<UActorComponent*> Components;
     Target->GetComponents(UActorComponent::StaticClass(), Components);
 
-    for (UActorComponent* Comp : Components)
-    {
-        if (Comp && Comp->GetName().Contains("Damagable"))
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Got the Damagable component")));
+    //for (UActorComponent* Comp : Components)
+    //{
+    //    if (Comp && Comp->GetName().Contains("Damagable"))
+    //    {
+    //        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Got the Damagable component")));
 
-            FName FuncName = TEXT("AddHP_Event");
-            UFunction* Func = Comp->FindFunction(FuncName);
-            if (Func)
-            {
-                struct FAddHealthParams
-                {
-                    float Amount;
-                };
-                FAddHealthParams Params;
-                Params.Amount = HealAmount;
-                Comp->ProcessEvent(Func, &Params);
-                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Health buff AddHP_Event")));
-				
-            }
-        }
-    }
+    //        FName FuncName = TEXT("AddHP_Event");
+    //        UFunction* Func = Comp->FindFunction(FuncName);
+    //        if (Func)
+    //        {
+    //            struct FAddHealthParams
+    //            {
+    //                float Amount;
+    //            };
+    //            FAddHealthParams Params;
+    //            Params.Amount = HealAmount;
+    //            Comp->ProcessEvent(Func, &Params);
+    //            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Health buff AddHP_Event")));
+				//
+    //        }
+    //    }
+    //}
 }

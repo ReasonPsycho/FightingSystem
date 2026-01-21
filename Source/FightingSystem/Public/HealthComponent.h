@@ -57,9 +57,12 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnDeath OnDeath;
-private:
+
+	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
 	void set_health(float health);
-	void max_health(float health);
+
+	UFUNCTION(BlueprintCallable, Category = "HealthComponent")
+	void set_max_health(float health);
 
 	float health_ = 1.0f;
 	float max_health_ = 1.0f;

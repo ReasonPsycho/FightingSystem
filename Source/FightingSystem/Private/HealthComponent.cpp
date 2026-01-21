@@ -34,9 +34,13 @@ void UHealthComponent::set_health(float health)
 			OnDeath.Broadcast();
 		}
 	}
+
+	if (health_ > max_health_) {
+		set_max_health(health_);
+	}
 }
 
-void UHealthComponent::max_health(float health)
+void UHealthComponent::set_max_health(float health)
 {
 	max_health_ = health;
 }

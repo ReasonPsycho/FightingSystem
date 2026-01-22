@@ -22,7 +22,6 @@ ABuffPickup::ABuffPickup()
     PickupMesh->SetupAttachment(RootComponent);
     // You might want to disable collision on this mesh as the sphere handles pickup
     PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 }
 
 void ABuffPickup::BeginPlay()

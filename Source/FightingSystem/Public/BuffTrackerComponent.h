@@ -45,7 +45,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Buffs")
 	TSubclassOf<class ABuffPickup> _buffClass;
 
-	// Funkcja, która faktycznie stworzy przedmiot
 	void SpawnDelayedPickup(FVector SpawnLocation);
 
 

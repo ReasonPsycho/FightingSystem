@@ -56,15 +56,12 @@ void UBuffTrackerComponent::BeginPlay()
 {
     Super::BeginPlay();
 
-    // 1. Pobierz subsystem w BeginPlay
     UHealthManagerSubsystem* HealthSubsystem = GetWorld()->GetSubsystem<UHealthManagerSubsystem>();
 
     if (HealthSubsystem)
     {
-        // 2. Bindujemy tylko RAZ na pocz¹tku gry
         HealthSubsystem->OnActorDied.AddDynamic(this, &UBuffTrackerComponent::HandleGlobalDeath);
 
-        // TEST: Log informuj¹cy, ¿e bindowanie zakoñczy³o siê sukcesem
         UE_LOG(LogTemp, Warning, TEXT("BuffTracker: Pomyœlnie zasubskrybowano do HealthSubsystem!"));
     }
 }
@@ -85,7 +82,6 @@ void UBuffTrackerComponent::SpawnDelayedPickup(FVector SpawnLocation)
         FActorSpawnParameters SpawnParams;
         SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-        // Spawnowanie buffa z Twoim materia³em (glitch, lewitacja itd.)
         GetWorld()->SpawnActor<ABuffPickup>(_buffClass, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
 
         UE_LOG(LogTemp, Log, TEXT("Pickup zrodzony po opóŸnieniu!"));

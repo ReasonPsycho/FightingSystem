@@ -11,7 +11,7 @@ AEntranceActor::AEntranceActor()
     TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
     RootComponent = TriggerBox;
 
-    TriggerBox->SetBoxExtent(FVector(200.f, 200.f, 200.f));
+    TriggerBox->SetBoxExtent(FVector(800.f, 800.f, 800.f));
     TriggerBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     TriggerBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
     TriggerBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);

@@ -3,6 +3,7 @@
 #include "Engine/World.h"
 #include "RoomActor.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "NavigationSystem.h"
 
 ADungeonGenerator::ADungeonGenerator()
 {
@@ -325,5 +326,12 @@ void ADungeonGenerator::GenerateDungeon()
             }
         }
     }
+    UE_LOG(LogTemp, Warning, TEXT("Dungeon generated."));
+    UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+    if (NavSys)
+    {
+        NavSys->Build();
+    }
+    UE_LOG(LogTemp, Warning, TEXT("Navigation mesh rebuit."));
 }
 

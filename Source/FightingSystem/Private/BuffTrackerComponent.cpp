@@ -101,7 +101,8 @@ void UBuffTrackerComponent::ApplyBuff(TSubclassOf<UBuffEffect> BuffClass)
 
     if (NewBuff)
     {
-        NewBuff->Apply(GetOwner());
+        //NewBuff->Apply(GetOwner());
+		NewBuff->Apply_Implementation(GetOwner());
 
         FActiveBuffData NewData;
         NewData.BuffEffect = NewBuff;

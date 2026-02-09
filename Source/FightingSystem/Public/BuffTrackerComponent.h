@@ -32,6 +32,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Buffs")
 	void HandleGlobalDeath(FVector DeathLocation);
 
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "Score")
+	int32 TotalScore = 0;
 
 protected:
 	// Called when the game starts
@@ -54,6 +56,7 @@ public:
 	UPROPERTY()
 	TArray<struct FActiveBuffData> ActiveBuffs;
 
-		
+	UFUNCTION(BlueprintCallable, Category = "Score")
+	inline void AddScore(int32 Amount) { TotalScore += Amount; }
 	
 };

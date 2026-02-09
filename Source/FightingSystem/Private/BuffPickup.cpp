@@ -76,9 +76,21 @@ void ABuffPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 		if (Tracker)
 		{
             Tracker->ApplyBuff(CurrentBuffClass);
+
+            if (GEngine)
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("Znaleziono BuffTracker Component"));
+            }
+
 		}
         else
         {
+
+            if (GEngine)
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("Brak  BuffTracker Component"));
+            }
+
             UBuffEffect* TempBuff = NewObject<UBuffEffect>(OtherActor, CurrentBuffClass);
             if (TempBuff)
             {

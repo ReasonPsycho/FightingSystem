@@ -14,7 +14,8 @@ void UScore::Apply_Implementation(AActor* Target)
         UBuffTrackerComponent* Tracker = Target->FindComponentByClass<UBuffTrackerComponent>();
         if (Tracker)
         {
-            Tracker->AddScore(point);
+            //Tracker->AddScore(point);
+            Tracker->AddScoreDetailed(this->GetClass(), point);
             if (GEngine)
             {
                 GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("Zebrano punkty!!"));

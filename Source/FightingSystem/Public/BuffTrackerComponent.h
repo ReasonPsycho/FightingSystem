@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include <BuffPickup.h>
+#include "Score.h"
 #include "BuffTrackerComponent.generated.h"
 
 USTRUCT(BlueprintType)
@@ -35,6 +36,9 @@ public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "Score")
 	int32 TotalScore = 0;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score")
+	TMap<TSubclassOf<UScore>, int32> CollectedScores;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -56,7 +60,10 @@ public:
 	UPROPERTY()
 	TArray<struct FActiveBuffData> ActiveBuffs;
 
+	//UFUNCTION(BlueprintCallable, Category = "Score")
+	//inline void AddScore(int32 Amount) { TotalScore += Amount; }
+
 	UFUNCTION(BlueprintCallable, Category = "Score")
-	inline void AddScore(int32 Amount) { TotalScore += Amount; }
-	
+	void AddScoreDetailed(TSubclassOf<UScore> ScoreClass, int32 Points);
+
 };

@@ -36,6 +36,9 @@ public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite, Category = "Score")
 	int32 TotalScore = 0;
 
+	UFUNCTION(BlueprintCallable, Category = "Score")
+		int32 GetTotalScore() const { return TotalScore; }
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score")
 	TMap<TSubclassOf<UScore>, int32> CollectedScores;
 

@@ -274,7 +274,7 @@ void ADungeonGenerator::GenerateDungeon()
 
                 if (NewRoom)
                 {
-                    NewRoom->SetActorLabel(FString::Printf(TEXT("%d-%d"), x, y));
+                    //NewRoom->SetActorLabel(FString::Printf(TEXT("%d-%d"), x, y));
 
                     // Przygotuj ZDiff PRZED wywołaniem UpdateDoors
                     // Przygotuj ZDiff PRZED wywołaniem UpdateDoors

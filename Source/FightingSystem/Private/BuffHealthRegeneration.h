@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "BuffEffect.h"
+#include <HealthComponent.h>
 #include "BuffHealthRegeneration.generated.h"
 
 /**

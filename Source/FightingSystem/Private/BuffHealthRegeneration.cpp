@@ -10,7 +10,16 @@ UBuffHealthRegeneration::UBuffHealthRegeneration()
 
 void UBuffHealthRegeneration::Apply_Implementation(AActor* Target)
 {
-    if (!Target) return;
+	if (Target)
+	{
+		UHealthComponent* HealthComp = Target->FindComponentByClass<UHealthComponent>();
 
-    
+		if (HealthComp)
+		{
+			
+			HealthComp->HealFullHealthPercentage(HealAmount);
+
+			UE_LOG(LogTemp, Warning, TEXT("Uleczono gracza o: %f"), HealAmount);
+		}
+	}
 }

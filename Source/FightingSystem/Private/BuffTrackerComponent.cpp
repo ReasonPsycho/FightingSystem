@@ -112,4 +112,11 @@ void UBuffTrackerComponent::ApplyBuff(TSubclassOf<UBuffEffect> BuffClass)
     }
 }
 
-
+void UBuffTrackerComponent::AddScoreDetailed(TSubclassOf<UScore> ScoreClass, int32 Points)
+{
+    if (ScoreClass)
+    {
+        TotalScore += Points;
+        CollectedScores.FindOrAdd(ScoreClass) += 1;
+    }
+}
